@@ -12,13 +12,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: const Dashboard(),
+      home: Dashboard(),
+      initialBinding: InitialBindings(),
     );
+  }
+}
+
+class InitialBindings implements Bindings {
+  @override
+  void dependencies() {
+    Get.put(DashboardController());
   }
 }
 
 class DashboardController extends GetxController
     with GetTickerProviderStateMixin {
+  static DashboardController get to => Get.find();
+
   final _selectedIndex = 0.obs;
   int get selectedIndex => _selectedIndex.value;
   set selectedIndex(int val) => _selectedIndex.value = val;
@@ -46,6 +56,9 @@ class DashboardController extends GetxController
       length: views.length,
       vsync: this,
     );
+    tabController.addListener(() {
+      _selectedIndex.value = tabController.index;
+    });
     ever(_selectedIndex, handleSelectedIndexChange);
     super.onInit();
   }
@@ -60,7 +73,7 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put<DashboardController>(DashboardController());
+    final controller = Get.find<DashboardController>();
 
     return Scaffold(
       appBar: AppBar(
